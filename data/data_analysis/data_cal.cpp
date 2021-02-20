@@ -44,10 +44,22 @@ void push_data(vector<string> s){
 
 int main(){
 	fstream fin;
+	fstream result;
 	
-	fin.open("real_mo_data.txt");
+	string name;
+	cout << "파일 이름을 입력해 주세요.(.txt 제외) : " ;
+	cin >> name;
+	
+	fin.open(name+".txt");
+	
+	if(!fin){
+		cout << "해당 파일이 없습니다.\n";
+		return 0; 
+	}
+	result.open(name+"_result.txt");
+	
+	cout << "조금만 기다려 주세요\n";
 	string tmp;
-	int cnt = 0;
 	while(!fin.eof() && fin >> tmp){
 		if(check(tmp)) {
 			vector<string> s = split(tmp);
@@ -55,15 +67,28 @@ int main(){
 			push_data(s);
 		}
 	}
+	vector<pair<string,int>> rv;
 	
 	sort(v.begin(), v.end());
-	v.erase(unique(v.begin(),v.end()),v.end());
-
-	for(int i=0;i<v.size();i++){
-		if(v[i].size() <= 2) v.erase(v.begin()+i);
+	
+	int len = v.size();
+	rv.push_back({v[0], 1});
+	for(int i=1;i<len;i++){
+		if(v[i] == v[i-1]){
+			rv.back().second++;
+		}
+		else{
+			rv.push_back({v[i], 1});
+		}
 	}
 	
-	for(int i=0;i<v.size();i++){
-		cout << v[i] << endl;
+	len = rv.size();
+	for(int i=0;i<len;i++){
+		result << rv[i].first << " " << rv[i].second << endl;
 	}
+	
+	fin.close();
+	result.close();
+	
+	cout << "완료되었습니다.\n";
 }
